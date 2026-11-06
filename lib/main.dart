@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:loja_do_ze/modules/login/views/login_page.dart';
 import 'dart:async';
-import 'telas/tela_produtos.dart';
-import 'telas/CarrinhoScreen.dart';
-import 'Utils.dart';
+import 'modules/home/views/home_view.dart';
+import 'modules/cart/views/cart_page.dart';
+import 'shared/utils.dart';
 import 'helper.dart';
 import 'globals.dart';
 
@@ -22,110 +23,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
 
-class _LoginPageState extends State<LoginPage> {
-  var c1 = TextEditingController();
-  var c2 = TextEditingController();
-  bool l = false;
-  String? e;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-        backgroundColor: Color(0xFF6200EE),
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 32.0),
-            Text(
-              "Loja do Zé",
-              style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF6200EE)),
-            ),
-            SizedBox(height: 32.0),
-            TextField(
-              controller: c1,
-              decoration: InputDecoration(
-                labelText: "Usuário",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: c2,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: "Senha",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            e != null
-                ? Text(e!, style: TextStyle(color: Color(0xFFB00020)))
-                : Container(),
-            SizedBox(height: 16.0),
-            l == true
-                ? CircularProgressIndicator()
-                : SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF6200EE),
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          l = true;
-                          e = null;
-                        });
-                        await Future.delayed(Duration(seconds: 1));
-                        if (c1.text == "" || c2.text == "") {
-                          setState(() {
-                            e = "Preencha tudo";
-                            l = false;
-                          });
-                          return;
-                        }
-                        if (Utils.valida(c2.text, 2) == false) {
-                          setState(() {
-                            e = "Senha tem que ter 6 caracteres";
-                            l = false;
-                          });
-                          return;
-                        }
-                        var ok = Helper.get().login(c1.text, c2.text);
-                        if (ok == true) {
-                          print("logou: " + c1.text + " / " + c2.text);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TelaProdutos()),
-                          );
-                        } else {
-                          setState(() {
-                            e = "Usuário ou senha inválidos";
-                            l = false;
-                          });
-                        }
-                      },
-                      child: Text("Entrar"),
-                    ),
-                  ),
-          ],
-        ),
-      ),
-    );
-  }
-}

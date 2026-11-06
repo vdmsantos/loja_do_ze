@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/produto.dart';
-import '../helper.dart';
-import '../globals.dart';
-import '../Utils.dart';
-import 'CarrinhoScreen.dart';
+import '../../../helper.dart';
+import '../../../globals.dart';
+import '../../../shared/utils.dart';
+import '../../cart/views/cart_page.dart';
 
 class TelaProdutos extends StatefulWidget {
   @override
@@ -45,13 +45,6 @@ class _TelaProdutosState extends State<TelaProdutos> {
     }
   }
 
-  // void carregaAntigo() async {
-  //   var r = await http.get(Uri.parse("http://api.lojadoze.com.br/v1/produtos"));
-  //   var j = jsonDecode(r.body);
-  //   setState(() {
-  //     produtos = j.map((e) => Produto.fromMap(e)).toList();
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +58,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               Navigator.push(context,
-                      MaterialPageRoute(builder: (c) => CarrinhoScreen()))
+                      MaterialPageRoute(builder: (c) => CartPage()))
                   .then((v) {
                 setState(() {});
               });
@@ -108,7 +101,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                     p.nome!
                                         .toLowerCase()
                                         .contains(busca.toLowerCase()) &&
-                                    (filtro == "todos" || p.cat == filtro))
+                                    (filtro == "todos" || p.categoria == filtro))
                                 .toList();
                           });
                         },
@@ -145,7 +138,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                         p.nome!
                                             .toLowerCase()
                                             .contains(busca.toLowerCase()) &&
-                                        p.cat == "roupas")
+                                        p.categoria == "roupas")
                                     .toList();
                               });
                             },
@@ -162,7 +155,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                         p.nome!
                                             .toLowerCase()
                                             .contains(busca.toLowerCase()) &&
-                                        p.cat == "casa")
+                                        p.categoria == "casa")
                                     .toList();
                               });
                             },
@@ -179,7 +172,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                         p.nome!
                                             .toLowerCase()
                                             .contains(busca.toLowerCase()) &&
-                                        p.cat == "acessorios")
+                                        p.categoria == "acessorios")
                                     .toList();
                               });
                             },
@@ -204,7 +197,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         children: [
                           for (var p in produtos!)
-                            if (p.promo == true)
+                            if (p.desconto == true)
                               Container(
                                 width: 140,
                                 margin: EdgeInsets.only(right: 8.0),
@@ -292,7 +285,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
                                         SizedBox(height: 4),
-                                        p.promo == true
+                                        p.desconto == true
                                             ? Row(
                                                 children: [
                                                   Text(

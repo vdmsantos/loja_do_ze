@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import '../globals.dart';
-import '../helper.dart';
-import '../Utils.dart';
-import '../models/produto.dart';
+import '../../../globals.dart';
+import '../../../helper.dart';
+import '../../../shared/utils.dart';
+import '../../home/models/produto.dart';
 
-class CarrinhoScreen extends StatefulWidget {
+class CartPage extends StatefulWidget {
   @override
-  _CarrinhoScreenState createState() => _CarrinhoScreenState();
+  _CartPageState createState() => _CartPageState();
 }
 
-class _CarrinhoScreenState extends State<CarrinhoScreen> {
+class _CartPageState extends State<CartPage> {
+  List<Produto> carrinho = [];
   bool cupom = false;
   bool frete = true;
   String? uf = "SC";
@@ -18,7 +19,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
   double calculaTotal() {
     double t = 0;
     for (int i = 0; i < carrinho.length; i++) {
-      if (carrinho[i].promo == true) {
+      if (carrinho[i].desconto == true) {
         t += carrinho[i].preco - (carrinho[i].preco * 0.15);
       } else {
         t += carrinho[i].preco;

@@ -1,5 +1,5 @@
 // variaveis globais
-import 'models/produto.dart';
+import 'modules/home/models/produto.dart';
 
 List<Produto> carrinho = [];
 var usuarioLogado;
