@@ -2,9 +2,10 @@ import 'dart:math';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'models/produto.dart';
+import 'package:loja_do_ze/modules/produtos/infra/models/produto_model.dart';
+import 'modules/produtos/domain/entities/produto.dart';
 import 'globals.dart';
-import 'Utils.dart';
+import 'shared/utils/Utils.dart';
 
 // classe que faz as coisas
 class Helper {
@@ -34,7 +35,7 @@ class Helper {
       var lista = jsonDecode(json);
       List<Produto> l = [];
       for (var i = 0; i < lista.length; i++) {
-        l.add(Produto.fromMap(lista[i]));
+        l.add(ProdutoModel.fromMap(lista[i]));
       }
       return l;
     } catch (e) {
@@ -113,8 +114,8 @@ class Helper {
   // TODO: arrumar isso depois (2019)
   int validaTudo(String nome, String email, String cpf) {
     if (nome == "") return -1;
-    if (!Utils.valida(email, 1)) return -2;
-    if (!Utils.valida(cpf, 3)) return -3;
+    if (!Utils.validaEmail(email, 1)) return -2;
+    if (!Utils.validaEmail(cpf, 3)) return -3;
     return 1;
   }
 }

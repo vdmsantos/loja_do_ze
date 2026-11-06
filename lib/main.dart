@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'telas/tela_produtos.dart';
-import 'telas/CarrinhoScreen.dart';
-import 'Utils.dart';
+import 'modules/produtos/presenter/produto_page.dart';
+import 'telas/carrinho_page.dart';
+import 'shared/utils/Utils.dart';
 import 'helper.dart';
-import 'globals.dart';
 
 void main() {
   runApp(MyApp());
@@ -98,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                           return;
                         }
-                        if (Utils.valida(c2.text, 2) == false) {
+                        if (Utils.validaEmail(c2.text, 2) == false) {
                           setState(() {
                             e = "Senha tem que ter 6 caracteres";
                             l = false;
@@ -111,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TelaProdutos()),
+                                builder: (context) => ProdutoPage()),
                           );
                         } else {
                           setState(() {

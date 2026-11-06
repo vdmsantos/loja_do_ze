@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import '../models/produto.dart';
-import '../helper.dart';
-import '../globals.dart';
-import '../Utils.dart';
-import 'CarrinhoScreen.dart';
+import '../domain/entities/produto.dart';
+import '../../../helper.dart';
+import '../../../shared/utils/Utils.dart';
+import '../../../telas/carrinho_page.dart';
 
-class TelaProdutos extends StatefulWidget {
+class ProdutoPage extends StatefulWidget {
   @override
-  _TelaProdutosState createState() => _TelaProdutosState();
+  _ProdutoPageState createState() => _ProdutoPageState();
 }
 
-class _TelaProdutosState extends State<TelaProdutos> {
-  List<Produto>? produtos;
-  List<Produto>? produtosFiltrados;
+class _ProdutoPageState extends State<ProdutoPage> {
+  List<Produto>? listaProdutos;
+  List<Produto>? listaProdutosFiltrados;
   bool carregando = true;
   bool erro = false;
   String busca = "";
@@ -38,20 +37,12 @@ class _TelaProdutosState extends State<TelaProdutos> {
       });
     } else {
       setState(() {
-        produtos = r;
-        produtosFiltrados = r;
+        listaProdutos = r;
+        listaProdutosFiltrados = r;
         carregando = false;
       });
     }
   }
-
-  // void carregaAntigo() async {
-  //   var r = await http.get(Uri.parse("http://api.lojadoze.com.br/v1/produtos"));
-  //   var j = jsonDecode(r.body);
-  //   setState(() {
-  //     produtos = j.map((e) => Produto.fromMap(e)).toList();
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +94,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                         onChanged: (v) {
                           busca = v;
                           setState(() {
-                            produtosFiltrados = produtos!
+                            listaProdutosFiltrados = listaProdutos!
                                 .where((p) =>
                                     p.nome!
                                         .toLowerCase()
@@ -125,7 +116,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                             onSelected: (s) {
                               setState(() {
                                 filtro = "todos";
-                                produtosFiltrados = produtos!
+                                listaProdutosFiltrados = listaProdutos!
                                     .where((p) => p.nome!
                                         .toLowerCase()
                                         .contains(busca.toLowerCase()))
@@ -140,7 +131,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                             onSelected: (s) {
                               setState(() {
                                 filtro = "roupas";
-                                produtosFiltrados = produtos!
+                                listaProdutosFiltrados = listaProdutos!
                                     .where((p) =>
                                         p.nome!
                                             .toLowerCase()
@@ -157,7 +148,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                             onSelected: (s) {
                               setState(() {
                                 filtro = "casa";
-                                produtosFiltrados = produtos!
+                                listaProdutosFiltrados = listaProdutos!
                                     .where((p) =>
                                         p.nome!
                                             .toLowerCase()
@@ -174,7 +165,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                             onSelected: (s) {
                               setState(() {
                                 filtro = "acessorios";
-                                produtosFiltrados = produtos!
+                                listaProdutosFiltrados = listaProdutos!
                                     .where((p) =>
                                         p.nome!
                                             .toLowerCase()
@@ -203,8 +194,8 @@ class _TelaProdutosState extends State<TelaProdutos> {
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         children: [
-                          for (var p in produtos!)
-                            if (p.promo == true)
+                          for (var p in listaProdutos!)
+                            if (p.promocao == true)
                               Container(
                                 width: 140,
                                 margin: EdgeInsets.only(right: 8.0),
@@ -241,8 +232,8 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                           setState(() {});
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                            content: Text(
-                                                p.nome! + " adicionado!"),
+                                            content:
+                                                Text(p.nome! + " adicionado!"),
                                             backgroundColor: Color(0xFF03DAC6),
                                             duration:
                                                 Duration(milliseconds: 1500),
@@ -261,9 +252,9 @@ class _TelaProdutosState extends State<TelaProdutos> {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: produtosFiltrados!.length,
+                        itemCount: listaProdutosFiltrados!.length,
                         itemBuilder: (context, i) {
-                          var p = produtosFiltrados![i];
+                          var p = listaProdutosFiltrados![i];
                           if (p.status == "inativo") {
                             return Container();
                           }
@@ -292,7 +283,7 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
                                         SizedBox(height: 4),
-                                        p.promo == true
+                                        p.promocao == true
                                             ? Row(
                                                 children: [
                                                   Text(
@@ -326,7 +317,8 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                                 ],
                                               )
                                             : Text(
-                                                Utils.formata(p.getPreco()),
+                                                Utils.formatarPreco(
+                                                    p.getPreco()),
                                                 style: TextStyle(
                                                     color: Color(0xFF6200EE),
                                                     fontWeight:
@@ -376,8 +368,8 @@ class _TelaProdutosState extends State<TelaProdutos> {
                                               setState(() {});
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(SnackBar(
-                                                content: Text(p.nome! +
-                                                    " adicionado!"),
+                                                content: Text(
+                                                    p.nome! + " adicionado!"),
                                                 backgroundColor:
                                                     Color(0xFF03DAC6),
                                                 duration: Duration(

@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 class Utils {
   // formata
-  static String formata(double v) {
+  static String formatarPreco(double v) {
     return "R\$ " + v.toStringAsFixed(2).replaceAll(".", ",");
   }
 
   // valida
-  static bool valida(String s, int tipo) {
+  static bool validaEmail(String email, int tipo) {
     if (tipo == 1) {
       // email
-      if (s.contains("@") && s.contains("."))
+      if (email.contains("@") && email.contains("."))
         return true;
       else
         return false;
     } else if (tipo == 2) {
       // senha
-      if (s.length >= 6)
+      if (email.length >= 6)
         return true;
       else
         return false;
     } else if (tipo == 3) {
       // cpf
-      if (s.length == 11)
+      if (email.length == 11)
         return true;
       else
         return false;

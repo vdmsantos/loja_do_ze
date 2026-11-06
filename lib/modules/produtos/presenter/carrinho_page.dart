@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../globals.dart';
 import '../helper.dart';
-import '../Utils.dart';
-import '../models/produto.dart';
+import '../shared/utils/Utils.dart';
+import '../modules/produtos/domain/entities/produto.dart';
 
 class CarrinhoScreen extends StatefulWidget {
   @override
@@ -96,7 +96,15 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                                 Text("Estado: "),
                                 DropdownButton<String>(
                                   value: uf,
-                                  items: ["SC", "PR", "RS", "SP", "RJ", "MG", "BA"]
+                                  items: [
+                                    "SC",
+                                    "PR",
+                                    "RS",
+                                    "SP",
+                                    "RJ",
+                                    "MG",
+                                    "BA"
+                                  ]
                                       .map((e) => DropdownMenuItem(
                                           value: e, child: Text(e)))
                                       .toList(),
@@ -114,7 +122,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("Subtotal"),
-                          Text(Utils.formata(calculaTotal())),
+                          Text(Utils.formatarPreco(calculaTotal())),
                         ],
                       ),
                       Row(
@@ -124,7 +132,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold)),
                           Text(
-                            Utils.formata(Helper.get()
+                            Utils.formatarPreco(Helper.get()
                                 .calcula(carrinho, cupom, frete, uf)),
                             style: TextStyle(
                                 fontSize: 18,
@@ -153,7 +161,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                               builder: (c) => AlertDialog(
                                 title: Text("Pedido feito!"),
                                 content: Text("Total: " +
-                                    Utils.formata(total) +
+                                    Utils.formatarPreco(total) +
                                     "\nObrigado pela compra!"),
                                 actions: [
                                   TextButton(
