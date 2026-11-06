@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'colors.dart';
 
 class Utils {
   // formata
-  static String formata(double v) {
-    return "R\$ " + v.toStringAsFixed(2).replaceAll(".", ",");
+  static String formata(double valor) {
+    return formataMoeda(valor);
+  }
+
+  static String formataMoeda(double valor) {
+    return "R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}";
   }
 
   // valida
@@ -31,9 +36,9 @@ class Utils {
   }
 
   static Color cor(int i) {
-    if (i == 1) return Color(0xFF6200EE);
-    if (i == 2) return Color(0xFF03DAC6);
-    if (i == 3) return Color(0xFFB00020);
-    return Color(0xFF000000);
+    if (i == 1) return colorPurple;
+    if (i == 2) return colorTeal;
+    if (i == 3) return colorRed;
+    return colorBlack;
   }
 }

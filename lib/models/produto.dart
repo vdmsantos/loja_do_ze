@@ -2,14 +2,14 @@ class Produto {
   var id;
   String? nome;
   var preco;
-  String? cat; // categoria
+  String? categoria;
   int? estoque;
-  String? img;
-  bool? promo;
+  String? imagem;
+  bool? promocao;
   String status = "ativo"; // ativo, inativo, esgotado, ATIVO
 
-  Produto(this.id, this.nome, this.preco, this.cat, this.estoque, this.img,
-      this.promo);
+  Produto(this.id, this.nome, this.preco, this.categoria, this.estoque,
+      this.imagem, this.promocao);
 
   // cria produto a partir do map
   static Produto fromMap(Map m) {
@@ -21,7 +21,7 @@ class Produto {
 
   // pega o preco
   double getPreco() {
-    if (promo == true) {
+    if (promocao == true) {
       return preco - (preco * 0.15);
     } else {
       return preco * 1.0;

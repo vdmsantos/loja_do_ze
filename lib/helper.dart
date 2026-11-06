@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'models/produto.dart';
 import 'globals.dart';
 import 'Utils.dart';
+import 'colors.dart';
 
 // classe que faz as coisas
 class Helper {
@@ -44,7 +45,7 @@ class Helper {
   }
 
   bool login(String u, String s) {
-    if (u == "admin" && s == SENHA_ADMIN) {
+    if (u == "admin" && s == senhaAdmin) {
       usuarioLogado = "admin";
       return true;
     } else if (u.length > 3 && s.length >= 6) {
@@ -105,7 +106,7 @@ class Helper {
   void mostraMsg(BuildContext context, String msg, bool erro) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
-      backgroundColor: erro == true ? Color(0xFFB00020) : Color(0xFF03DAC6),
+      backgroundColor: erro == true ? colorRed : colorTeal,
       duration: Duration(milliseconds: 1500),
     ));
   }

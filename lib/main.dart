@@ -5,6 +5,8 @@ import 'telas/CarrinhoScreen.dart';
 import 'Utils.dart';
 import 'helper.dart';
 import 'globals.dart';
+import 'widgets/edit_text.dart';
+import 'colors.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Loja do Zé',
-      theme: ThemeData(primaryColor: Color(0xFF6200EE)),
+      theme: ThemeData(primaryColor: colorPurple),
       home: LoginPage(),
     );
   }
@@ -38,8 +40,8 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
-        backgroundColor: Color(0xFF6200EE),
-        foregroundColor: Colors.white,
+        backgroundColor: colorPurple,
+        foregroundColor: colorWhite,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -51,28 +53,22 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF6200EE)),
+                  color: colorPurple),
             ),
             SizedBox(height: 32.0),
-            TextField(
+            EditText(
               controller: c1,
-              decoration: InputDecoration(
-                labelText: "Usuário",
-                border: OutlineInputBorder(),
-              ),
+              labelText: "Usuário",
             ),
             SizedBox(height: 16.0),
-            TextField(
+            EditText(
               controller: c2,
+              labelText: "Senha",
               obscureText: true,
-              decoration: InputDecoration(
-                labelText: "Senha",
-                border: OutlineInputBorder(),
-              ),
             ),
             SizedBox(height: 16.0),
             e != null
-                ? Text(e!, style: TextStyle(color: Color(0xFFB00020)))
+                ? Text(e!, style: TextStyle(color: colorRed))
                 : Container(),
             SizedBox(height: 16.0),
             l == true
@@ -82,8 +78,8 @@ class _LoginPageState extends State<LoginPage> {
                     height: 48,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF6200EE),
-                        foregroundColor: Colors.white,
+                        backgroundColor: colorPurple,
+                        foregroundColor: colorWhite,
                       ),
                       onPressed: () async {
                         setState(() {

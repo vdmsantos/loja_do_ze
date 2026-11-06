@@ -3,6 +3,7 @@ import '../models/produto.dart';
 import '../helper.dart';
 import '../globals.dart';
 import '../Utils.dart';
+import '../colors.dart';
 import 'CarrinhoScreen.dart';
 
 class TelaProdutos extends StatefulWidget {
@@ -45,28 +46,65 @@ class _TelaProdutosState extends State<TelaProdutos> {
     }
   }
 
-  // void carregaAntigo() async {
-  //   var r = await http.get(Uri.parse("http://api.lojadoze.com.br/v1/produtos"));
-  //   var j = jsonDecode(r.body);
-  //   setState(() {
-  //     produtos = j.map((e) => Produto.fromMap(e)).toList();
-  //   });
-  // }
+  void filtraProdutos() {
+    if (produtos == null) return;
+
+    setState(() {
+      produtosFiltrados = produtos!.where((p) {
+        final nomeOk = p.nome!.toLowerCase().contains(busca.toLowerCase());
+        final categoriaOk = filtro == "todos" || p.categoria == filtro;
+        return nomeOk && categoriaOk;
+      }).toList();
+    });
+  }
+
+  void adicionaProdutoAoCarrinho(Produto p, BuildContext context) {
+    if (p.status == "ativo" || p.status == "ATIVO") {
+      if (p.estoque != null) {
+        if (p.estoque! > 0) {
+          int jaNoCarrinho = 0;
+          for (var item in carrinho) {
+            if (item.id == p.id) {
+              jaNoCarrinho++;
+            }
+          }
+          if (jaNoCarrinho < p.estoque!) {
+            Helper.get().addCarrinho(p);
+            setState(() {});
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(p.nome! + " adicionado!"),
+                backgroundColor: colorTeal,
+                duration: Duration(milliseconds: 1500),
+              ),
+            );
+          } else {
+            Helper.get().mostraMsg(context, "Sem estoque suficiente", true);
+          }
+        } else {
+          Helper.get().mostraMsg(context, "Esgotado", true);
+        }
+      }
+    } else {
+      Helper.get().mostraMsg(context, "Produto indisponível", true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Produtos (" + qtd.toString() + ")"),
-        backgroundColor: Color(0xFF6200EE),
-        foregroundColor: Colors.white,
+        backgroundColor: colorPurple,
+        foregroundColor: colorWhite,
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (c) => CarrinhoScreen()))
-                  .then((v) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (c) => CarrinhoScreen()),
+              ).then((v) {
                 setState(() {});
               });
             },
@@ -83,118 +121,40 @@ class _TelaProdutosState extends State<TelaProdutos> {
                       Text("Deu erro :("),
                       SizedBox(height: 16.0),
                       ElevatedButton(
-                          onPressed: () {
-                            carrega();
-                          },
-                          child: Text("Tentar de novo")),
+                        onPressed: () {
+                          carrega();
+                        },
+                        child: Text("Tentar de novo"),
+                      ),
                     ],
                   ),
                 )
               : Column(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Buscar...",
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (v) {
-                          busca = v;
-                          setState(() {
-                            produtosFiltrados = produtos!
-                                .where((p) =>
-                                    p.nome!
-                                        .toLowerCase()
-                                        .contains(busca.toLowerCase()) &&
-                                    (filtro == "todos" || p.cat == filtro))
-                                .toList();
-                          });
-                        },
-                      ),
+                    _ProdutoSearchField(
+                      onChanged: (v) {
+                        busca = v;
+                        filtraProdutos();
+                      },
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          ChoiceChip(
-                            label: Text("Todos"),
-                            selected: filtro == "todos",
-                            onSelected: (s) {
-                              setState(() {
-                                filtro = "todos";
-                                produtosFiltrados = produtos!
-                                    .where((p) => p.nome!
-                                        .toLowerCase()
-                                        .contains(busca.toLowerCase()))
-                                    .toList();
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8.0),
-                          ChoiceChip(
-                            label: Text("Roupas"),
-                            selected: filtro == "roupas",
-                            onSelected: (s) {
-                              setState(() {
-                                filtro = "roupas";
-                                produtosFiltrados = produtos!
-                                    .where((p) =>
-                                        p.nome!
-                                            .toLowerCase()
-                                            .contains(busca.toLowerCase()) &&
-                                        p.cat == "roupas")
-                                    .toList();
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8.0),
-                          ChoiceChip(
-                            label: Text("Casa"),
-                            selected: filtro == "casa",
-                            onSelected: (s) {
-                              setState(() {
-                                filtro = "casa";
-                                produtosFiltrados = produtos!
-                                    .where((p) =>
-                                        p.nome!
-                                            .toLowerCase()
-                                            .contains(busca.toLowerCase()) &&
-                                        p.cat == "casa")
-                                    .toList();
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8.0),
-                          ChoiceChip(
-                            label: Text("Acessórios"),
-                            selected: filtro == "acessorios",
-                            onSelected: (s) {
-                              setState(() {
-                                filtro = "acessorios";
-                                produtosFiltrados = produtos!
-                                    .where((p) =>
-                                        p.nome!
-                                            .toLowerCase()
-                                            .contains(busca.toLowerCase()) &&
-                                        p.cat == "acessorios")
-                                    .toList();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                    _CategoriaFilterChips(
+                      filtroAtual: filtro,
+                      onSelecionado: (valor) {
+                        filtro = valor;
+                        filtraProdutos();
+                      },
                     ),
-                    // destaques
                     Padding(
                       padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text("Promoções",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          "Promoções",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -204,57 +164,12 @@ class _TelaProdutosState extends State<TelaProdutos> {
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         children: [
                           for (var p in produtos!)
-                            if (p.promo == true)
-                              Container(
-                                width: 140,
-                                margin: EdgeInsets.only(right: 8.0),
-                                padding: EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(color: Color(0xFFDDDDDD)),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Icon(Icons.local_offer,
-                                        color: Color(0xFFB00020)),
-                                    SizedBox(height: 4),
-                                    Text(p.nome!,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    Spacer(),
-                                    Text(
-                                      "R\$ " +
-                                          (p.preco - (p.preco * 0.15))
-                                              .toStringAsFixed(2)
-                                              .replaceAll(".", ","),
-                                      style: TextStyle(
-                                          color: Color(0xFF6200EE),
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        if (p.estoque! > 0) {
-                                          Helper.get().addCarrinho(p);
-                                          setState(() {});
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text(
-                                                p.nome! + " adicionado!"),
-                                            backgroundColor: Color(0xFF03DAC6),
-                                            duration:
-                                                Duration(milliseconds: 1500),
-                                          ));
-                                        }
-                                      },
-                                      child: Text("+ Adicionar",
-                                          style: TextStyle(
-                                              color: Color(0xFF03DAC6))),
-                                    ),
-                                  ],
-                                ),
+                            if (p.promocao == true)
+                              _ProdutoPromocaoCard(
+                                produto: p,
+                                onAdicionar: () {
+                                  adicionaProdutoAoCarrinho(p, context);
+                                },
                               ),
                         ],
                       ),
@@ -267,148 +182,223 @@ class _TelaProdutosState extends State<TelaProdutos> {
                           if (p.status == "inativo") {
                             return Container();
                           }
-                          return Card(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 60,
-                                    height: 60,
-                                    color: Color(0xFFEEEEEE),
-                                    child: Icon(Icons.image,
-                                        color: Color(0xFF999999)),
-                                  ),
-                                  SizedBox(width: 16.0),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(p.nome!,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold)),
-                                        SizedBox(height: 4),
-                                        p.promo == true
-                                            ? Row(
-                                                children: [
-                                                  Text(
-                                                    "R\$ " +
-                                                        p.preco
-                                                            .toStringAsFixed(2)
-                                                            .replaceAll(
-                                                                ".", ","),
-                                                    style: TextStyle(
-                                                        decoration:
-                                                            TextDecoration
-                                                                .lineThrough,
-                                                        color:
-                                                            Color(0xFF999999)),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    "R\$ " +
-                                                        (p.preco -
-                                                                (p.preco *
-                                                                    0.15))
-                                                            .toStringAsFixed(2)
-                                                            .replaceAll(
-                                                                ".", ","),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF6200EE),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ],
-                                              )
-                                            : Text(
-                                                Utils.formata(p.getPreco()),
-                                                style: TextStyle(
-                                                    color: Color(0xFF6200EE),
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          p.estoque == 0 ||
-                                                  p.status == "esgotado"
-                                              ? "Esgotado"
-                                              : p.estoque! < 5
-                                                  ? "Últimas " +
-                                                      p.estoque.toString() +
-                                                      " unidades!"
-                                                  : "Disponível",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: p.estoque == 0 ||
-                                                    p.status == "esgotado"
-                                                ? Color(0xFFB00020)
-                                                : p.estoque! < 5
-                                                    ? Colors.orange
-                                                    : Colors.green,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.add_shopping_cart,
-                                        color: p.estoque == 0
-                                            ? Color(0xFF999999)
-                                            : Color(0xFF6200EE)),
-                                    onPressed: () {
-                                      if (p.status == "ativo" ||
-                                          p.status == "ATIVO") {
-                                        if (p.estoque != null) {
-                                          if (p.estoque! > 0) {
-                                            int jaNoCarrinho = 0;
-                                            for (var item in carrinho) {
-                                              if (item.id == p.id) {
-                                                jaNoCarrinho++;
-                                              }
-                                            }
-                                            if (jaNoCarrinho < p.estoque!) {
-                                              Helper.get().addCarrinho(p);
-                                              setState(() {});
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                content: Text(p.nome! +
-                                                    " adicionado!"),
-                                                backgroundColor:
-                                                    Color(0xFF03DAC6),
-                                                duration: Duration(
-                                                    milliseconds: 1500),
-                                              ));
-                                            } else {
-                                              Helper.get().mostraMsg(
-                                                  context,
-                                                  "Sem estoque suficiente",
-                                                  true);
-                                            }
-                                          } else {
-                                            Helper.get().mostraMsg(
-                                                context, "Esgotado", true);
-                                          }
-                                        }
-                                      } else {
-                                        Helper.get().mostraMsg(context,
-                                            "Produto indisponível", true);
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
+                          return _ProdutoItemCard(
+                            produto: p,
+                            onAdicionar: () {
+                              adicionaProdutoAoCarrinho(p, context);
+                            },
                           );
                         },
                       ),
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+class _ProdutoSearchField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+
+  const _ProdutoSearchField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: "Buscar...",
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(),
+        ),
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class _CategoriaFilterChips extends StatelessWidget {
+  final String filtroAtual;
+  final ValueChanged<String> onSelecionado;
+
+  const _CategoriaFilterChips({
+    required this.filtroAtual,
+    required this.onSelecionado,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final filtros = [
+      {"label": "Todos", "valor": "todos"},
+      {"label": "Roupas", "valor": "roupas"},
+      {"label": "Casa", "valor": "casa"},
+      {"label": "Acessórios", "valor": "acessorios"},
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          for (var filtro in filtros)
+            Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: ChoiceChip(
+                label: Text(filtro["label"] as String),
+                selected: filtroAtual == filtro["valor"],
+                onSelected: (_) {
+                  onSelecionado(filtro["valor"] as String);
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProdutoPromocaoCard extends StatelessWidget {
+  final Produto produto;
+  final VoidCallback onAdicionar;
+
+  const _ProdutoPromocaoCard({
+    required this.produto,
+    required this.onAdicionar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      margin: EdgeInsets.only(right: 8.0),
+      padding: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: colorWhite,
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: colorBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.local_offer, color: colorRed),
+          SizedBox(height: 4),
+          Text(
+            produto.nome!,
+            maxLines: 2,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Spacer(),
+          Text(
+            Utils.formataMoeda(produto.preco * 0.85),
+            style: TextStyle(
+              color: colorPurple,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          GestureDetector(
+            onTap: onAdicionar,
+            child: Text(
+              "+ Adicionar",
+              style: TextStyle(color: colorTeal),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProdutoItemCard extends StatelessWidget {
+  final Produto produto;
+  final VoidCallback onAdicionar;
+
+  const _ProdutoItemCard({
+    required this.produto,
+    required this.onAdicionar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              color: colorSoftGray,
+              child: Icon(Icons.image, color: colorMediumGray),
+            ),
+            SizedBox(width: 16.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    produto.nome!,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 4),
+                  produto.promocao == true
+                      ? Row(
+                          children: [
+                            Text(
+                              Utils.formataMoeda(produto.preco),
+                              style: TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                color: colorMediumGray,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              Utils.formataMoeda(produto.preco * 0.85),
+                              style: TextStyle(
+                                color: colorPurple,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          Utils.formata(produto.getPreco()),
+                          style: TextStyle(
+                            color: colorPurple,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                  SizedBox(height: 4),
+                  Text(
+                    produto.estoque == 0 || produto.status == "esgotado"
+                        ? "Esgotado"
+                        : produto.estoque! < 5
+                            ? "Últimas ${produto.estoque} unidades!"
+                            : "Disponível",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          produto.estoque == 0 || produto.status == "esgotado"
+                              ? colorRed
+                              : produto.estoque! < 5
+                                  ? Colors.orange
+                                  : Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.add_shopping_cart,
+                color: produto.estoque == 0 ? colorMediumGray : colorPurple,
+              ),
+              onPressed: onAdicionar,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

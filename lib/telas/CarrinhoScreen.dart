@@ -3,6 +3,7 @@ import '../globals.dart';
 import '../helper.dart';
 import '../Utils.dart';
 import '../models/produto.dart';
+import '../colors.dart';
 
 class CarrinhoScreen extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
   double calculaTotal() {
     double t = 0;
     for (int i = 0; i < carrinho.length; i++) {
-      if (carrinho[i].promo == true) {
+      if (carrinho[i].promocao == true) {
         t += carrinho[i].preco - (carrinho[i].preco * 0.15);
       } else {
         t += carrinho[i].preco;
@@ -32,8 +33,8 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Carrinho"),
-        backgroundColor: Color(0xFF6200EE),
-        foregroundColor: Colors.white,
+        backgroundColor: colorPurple,
+        foregroundColor: colorWhite,
       ),
       body: carrinho.length == 0
           ? Center(child: Text("Carrinho vazio"))
@@ -47,8 +48,8 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                         leading: Container(
                           width: 40,
                           height: 40,
-                          color: Color(0xFFEEEEEE),
-                          child: Icon(Icons.image, color: Color(0xFF999999)),
+                          color: colorSoftGray,
+                          child: Icon(Icons.image, color: colorMediumGray),
                         ),
                         title: Text(carrinho[i].nome!),
                         subtitle: Text("R\$ " +
@@ -57,7 +58,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                                 .toStringAsFixed(2)
                                 .replaceAll(".", ",")),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Color(0xFFB00020)),
+                          icon: Icon(Icons.delete, color: colorRed),
                           onPressed: () {
                             Helper.get().removeCarrinho(i);
                             setState(() {});
@@ -69,7 +70,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                 ),
                 Container(
                   padding: EdgeInsets.all(16.0),
-                  color: Color(0xFFF5F5F5),
+                  color: colorBackground,
                   child: Column(
                     children: [
                       SwitchListTile(
@@ -96,7 +97,15 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                                 Text("Estado: "),
                                 DropdownButton<String>(
                                   value: uf,
-                                  items: ["SC", "PR", "RS", "SP", "RJ", "MG", "BA"]
+                                  items: [
+                                    "SC",
+                                    "PR",
+                                    "RS",
+                                    "SP",
+                                    "RJ",
+                                    "MG",
+                                    "BA"
+                                  ]
                                       .map((e) => DropdownMenuItem(
                                           value: e, child: Text(e)))
                                       .toList(),
@@ -129,7 +138,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF6200EE)),
+                                color: colorPurple),
                           ),
                         ],
                       ),
@@ -139,8 +148,8 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                         height: 48,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6200EE),
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorPurple,
+                            foregroundColor: colorWhite,
                           ),
                           onPressed: () async {
                             if (usuarioLogado == null) {
